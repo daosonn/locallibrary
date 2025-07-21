@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from .constants import (
     MAX_LENGTH_GENRE_NAME, MAX_LENGTH_AUTHOR_NAME, MAX_LENGTH_BOOK_TITLE,
-    MAX_LENGTH_BOOK_SUMMARY, MAX_LENGTH_BOOK_ISBN, MAX_LENGTH_BOOK_IMPRINT, LOAN_STATUS
+    MAX_LENGTH_BOOK_SUMMARY, MAX_LENGTH_BOOK_ISBN, MAX_LENGTH_BOOK_IMPRINT, LOAN_STATUS,MAX_GENRES_DISPLAY
 )
 
 class Genre(models.Model):
@@ -57,6 +57,10 @@ class Book(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
+
+    def display_genre(self):
+        return ', '.join(genre.name for genre in self.genre.all()[:MAX_GENRES_DISPLAY])
+    display_genre.short_description = 'Genre'
 
 class BookInstance(models.Model):
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
