@@ -1,5 +1,6 @@
 {% extends "base_generic.html" %}
 {% load i18n %}
+{% load status_tags %}
 {% load static %}
 
 {% block content %}
@@ -9,15 +10,13 @@
   <p><strong>{% trans "Summary:" %}</strong> {{ book.summary }}</p>
   <p><strong>{% trans "ISBN:" %}</strong> {{ book.isbn }}</p>
   <p><strong>{% trans "Language" %}:</strong> {{ book.language }}</p>
-  <p><strong>{% trans "Genre" %}:</strong> {{ book.genre.all|join:", " }}</p>
+  <p><strong>{% trans "Genre" %}:</strong> {{ genre_names|join:", " }}</p>
 
   <div class="book-detail-container">
     <h4>{% trans "Copies" %}</h4>
     {% for copy in copies %}
       <hr>
-      <p class="{% if copy.status == STATUS_AVAILABLE %}text-success
-                {% elif copy.status == STATUS_MAINTENANCE %}text-danger
-                {% else %}text-warning{% endif %}">
+      <p></p> class="{{ copy.status|status_class }}"
         {{ copy.get_status_display }}
       </p>
       {% if copy.status != STATUS_AVAILABLE %}

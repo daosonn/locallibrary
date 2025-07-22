@@ -10,18 +10,19 @@ def index(request):
     # Generate counts of some of the main objects
     num_books = Book.objects.count()
     num_instances = BookInstance.objects.count()
-
-
     num_instances_available = BookInstance.objects.filter(status=LOAN_STATUS_LOOKUP['available']).count()
 
-    # The 'all()' is implied by default.
+    # visit count
     num_authors = Author.objects.count()
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
 
     context = {
         'num_books': num_books,
         'num_instances': num_instances,
         'num_instances_available': num_instances_available,
         'num_authors': num_authors,
+        'num_visits': num_visits + 1,
     }
 
     return render(request, 'index.html', context=context)
@@ -46,12 +47,3 @@ class BookDetailView(generic.DetailView):
         context['STATUS_MAINTENANCE'] = constants.STATUS_MAINTENANCE
         context['status_labels']   = dict(constants.LOAN_STATUS)
         return context
-
-
-def book_detail_view(request, primary_key):
-    book = get_object_or_404(Book, pk=primary_key)
-    return render(
-        request,
-        'catalog/book_detail.html',
-        context={'book': book}
-    )
