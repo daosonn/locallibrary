@@ -14,3 +14,5 @@ LOAN_STATUS = (
     ('a', 'Available'),
     ('r', 'Reserved'),
 )
+
+LOAN_STATUS_LOOKUP = { label.lower().replace(' ', '_'): code for code, label in LOAN_STATUS }
