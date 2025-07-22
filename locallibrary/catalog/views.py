@@ -10,10 +10,7 @@ def index(request):
     num_instances = BookInstance.objects.count()
 
 
-    # Available books (status = 'a')
-    available_code = LOAN_STATUS_LOOKUP['available']  # trả về 'a'
-    num_instances_available = BookInstance.objects.filter(status__exact=available_code).count()
-    num_instances_available = BookInstance.objects.filter(status__exact='a').count()
+    num_instances_available = BookInstance.objects.filter(status=LOAN_STATUS_LOOKUP['available']).count()
 
     # The 'all()' is implied by default.
     num_authors = Author.objects.count()
