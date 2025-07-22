@@ -16,3 +16,11 @@ LOAN_STATUS = (
 )
 
 LOAN_STATUS_LOOKUP = { label.lower().replace(' ', '_'): code for code, label in LOAN_STATUS }
+
+STATUS_MAINTENANCE = LOAN_STATUS_LOOKUP['maintenance']
+STATUS_ON_LOAN     = LOAN_STATUS_LOOKUP['on_loan']
+STATUS_AVAILABLE   = LOAN_STATUS_LOOKUP['available']
+STATUS_RESERVED    = LOAN_STATUS_LOOKUP['reserved']
+
+# Số mục mỗi trang cho BookListView.paginate_by
+BOOK_LIST_VIEW_PAGINATE = 10

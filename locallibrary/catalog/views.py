@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.views import generic
+from catalog import constants
 from catalog.constants import LOAN_STATUS_LOOKUP
 from catalog.models import Book, Author, BookInstance, Genre
 
@@ -23,3 +25,33 @@ def index(request):
     }
 
     return render(request, 'index.html', context=context)
+
+class BookListView(generic.ListView):
+    model               = Book
+    paginate_by         = constants.BOOK_LIST_VIEW_PAGINATE
+    context_object_name = 'book_list'
+    template_name       = 'catalog/book_list.html'
+
+
+class BookDetailView(generic.DetailView):
+    model         = Book
+    template_name = 'catalog/book_detail.html'
+
+    def get_context_data(self, **kwargs):
+        """Bổ sung thêm danh sách copies và các label trạng thái"""
+        context = super().get_context_data(**kwargs)
+        book    = self.get_object()
+        context['copies']          = book.bookinstance_set.all()
+        context['STATUS_AVAILABLE']   = constants.STATUS_AVAILABLE
+        context['STATUS_MAINTENANCE'] = constants.STATUS_MAINTENANCE
+        context['status_labels']   = dict(constants.LOAN_STATUS)
+        return context
+
+
+def book_detail_view(request, primary_key):
+    book = get_object_or_404(Book, pk=primary_key)
+    return render(
+        request,
+        'catalog/book_detail.html',
+        context={'book': book}
+    )
