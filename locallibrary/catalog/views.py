@@ -3,6 +3,8 @@ from django.views import generic
 from catalog import constants
 from catalog.constants import LOAN_STATUS_LOOKUP
 from catalog.models import Book, Author, BookInstance, Genre
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 def index(request):
     """View function for the home page of site."""
@@ -47,3 +49,16 @@ class BookDetailView(generic.DetailView):
         context['STATUS_MAINTENANCE'] = constants.STATUS_MAINTENANCE
         context['status_labels']   = dict(constants.LOAN_STATUS)
         return context
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """Liệt kê sách user hiện tại đang mượn."""
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'  
+    paginate_by = constants.MY_BORROWED_PAGINATE_BY
+
+
+    def get_queryset(self):
+        return (BookInstance.objects
+                .filter(borrower=self.request.user)                         
+                .filter(status__exact=constants.STATUS_ON_LOAN)
+                .order_by('due_back'))                                      
