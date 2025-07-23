@@ -24,3 +24,6 @@ STATUS_RESERVED    = LOAN_STATUS_LOOKUP['reserved']
 
 # Số mục mỗi trang cho BookListView.paginate_by
 BOOK_LIST_VIEW_PAGINATE = 10
+
+# Số mục mỗi trang cho LoanedBooksByUserListView
+MY_BORROWED_PAGINATE_BY = 10
