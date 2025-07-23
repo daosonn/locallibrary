@@ -4,7 +4,14 @@ from catalog import constants
 from catalog.constants import LOAN_STATUS_LOOKUP
 from catalog.models import Book, Author, BookInstance, Genre
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+import datetime
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from catalog.forms import RenewBookForm
+from catalog.models import BookInstance
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 
 def index(request):
     """View function for the home page of site."""
@@ -62,3 +69,58 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
                 .filter(borrower=self.request.user)                         
                 .filter(status__exact=constants.STATUS_ON_LOAN)
                 .order_by('due_back'))                                      
+
+
+from django.views import generic
+from catalog.models import Author
+
+class AuthorListView(generic.ListView):
+    model = Author
+    template_name = 'catalog/author_list.html'   
+    context_object_name = 'author_list'
+    paginate_by = constants.AUTHOR_LIST_VIEW_PAGINATE
+
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
+    template_name = 'catalog/author_detail.html'
+
+@login_required
+@permission_required('catalog.can_mark_returned', raise_exception=True)
+def renew_book_librarian(request, pk):
+    """View function for renewing a specific BookInstance by librarian."""
+
+    book_instance = get_object_or_404(BookInstance, pk=pk)
+
+    if request.method == 'POST':
+        form = RenewBookForm(request.POST)
+
+        if form.is_valid():
+            book_instance.due_back = form.cleaned_data['renewal_date']
+            book_instance.save()
+
+            return HttpResponseRedirect(reverse('all-borrowed'))
+
+    else:
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        form = RenewBookForm(initial={'renewal_date': proposed_renewal_date})
+
+    context = {
+        'form': form,
+        'book_instance': book_instance,
+    }
+
+    return render(request, 'catalog/book_renew_librarian.html', context)
+
+class AuthorCreate(CreateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+    initial = {'date_of_death': constants.DEFAULT_DATE_OF_DEATH}
+
+class AuthorUpdate(UpdateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+
+class AuthorDelete(DeleteView):
+    model = Author
+    success_url = reverse_lazy('authors')

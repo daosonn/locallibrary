@@ -1,4 +1,5 @@
 # locallibrary/catalog/constants.py
+import datetime
 
 MAX_LENGTH_GENRE_NAME = 200
 MAX_LENGTH_AUTHOR_NAME = 100
@@ -24,6 +25,7 @@ STATUS_RESERVED    = LOAN_STATUS_LOOKUP['reserved']
 
 # Số mục mỗi trang cho BookListView.paginate_by
 BOOK_LIST_VIEW_PAGINATE = 10
-
+AUTHOR_LIST_VIEW_PAGINATE = 10
 # Số mục mỗi trang cho LoanedBooksByUserListView
 MY_BORROWED_PAGINATE_BY = 10
+DEFAULT_DATE_OF_DEATH = datetime.date(2000, 1, 1)
