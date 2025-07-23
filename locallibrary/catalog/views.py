@@ -11,9 +11,9 @@ def index(request):
     num_books = Book.objects.count()
     num_instances = BookInstance.objects.count()
     num_instances_available = BookInstance.objects.filter(status=LOAN_STATUS_LOOKUP['available']).count()
-
-    # visit count
     num_authors = Author.objects.count()
+    
+    # Visit count
     num_visits = request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits + 1
 
