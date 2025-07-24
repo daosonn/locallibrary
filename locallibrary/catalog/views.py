@@ -70,10 +70,6 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
                 .filter(status__exact=constants.STATUS_ON_LOAN)
                 .order_by('due_back'))                                      
 
-
-from django.views import generic
-from catalog.models import Author
-
 class AuthorListView(generic.ListView):
     model = Author
     template_name = 'catalog/author_list.html'   
